@@ -1,18 +1,17 @@
-# redis_benchmark
+## redis_benchmark
 
+# yum install -y wget gcc
+# wget http://download.redis.io/releases/redis-4.0.11.tar.gz
+# tar xvf redis-4.0.11.tar.gz 
+# cd redis-4.0.11
+# make
+# src/redis-server &
+# cd src
 
-yum install -y wget gcc
-wget http://download.redis.io/releases/redis-4.0.11.tar.gz
-tar xvf redis-4.0.11.tar.gz 
-cd redis-4.0.11
-make
-src/redis-server &
-cd src
+## localhost testing
 
-localhost testing
+# C4.2xlarge
 ~~~
-C4.2xlarge
-
 src/redis-benchmark  -q -n 100000
 PING_INLINE: 102354.15 requests per second
 PING_BULK: 102354.15 requests per second
@@ -33,9 +32,9 @@ LRANGE_500 (first 450 elements): 18907.17 requests per second
 LRANGE_600 (first 600 elements): 15151.52 requests per second
 MSET (10 keys): 104712.05 requests per second
 ~~~
-~~~
-M4.4xlarge
 
+# M4.4xlarge
+~~~
 src/redis-benchmark -q -n 100000
 PING_INLINE: 90334.23 requests per second
 PING_BULK: 89525.52 requests per second
@@ -57,10 +56,11 @@ LRANGE_600 (first 600 elements): 12610.34 requests per second
 MSET (10 keys): 91827.37 requests per second
 ~~~
 
-How to Set remote lister
+##How to Set remote lister
 
-~~~
+
 # cat /etc/myredis.conf
+~~~
 # [Redis](http://yijiebuyi.com/category/redis.html) 配置文件
 
 # 当配置中需要配置内存大小时，可以使用 1k, 5GB, 4M 等类似的格式，其转换方式如下(不区分大小写)
@@ -199,11 +199,11 @@ slave-serve-stale-data yes
 # repl-timeout 60   
 ~~~
 
-mkdir /var/log/redis
-touch /var/log/redis/redis.log
-./redis-server /etc/myredis.conf
+# mkdir /var/log/redis
+# touch /var/log/redis/redis.log
+# ./redis-server /etc/myredis.conf
 
-Client: C4.2X -> C4.2X
+# Client: C4.2X -> C4.2X same AZ
 
 ~~~
 ./redis-benchmark -q -n 100000 -h 172.31.40.47
@@ -227,8 +227,9 @@ LRANGE_600 (first 600 elements): 16310.55 requests per second
 MSET (10 keys): 95693.78 requests per second
 ~~~
 
-Client: C4.2x -> M4.4X
+# Client: C4.2x -> M4.4X
 
+~~~
 ./redis-benchmark -q -n 100000 -h 172.31.43.161
 PING_INLINE: 81300.81 requests per second
 PING_BULK: 80450.52 requests per second
@@ -248,11 +249,13 @@ LRANGE_300 (first 300 elements): 25987.53 requests per second
 LRANGE_500 (first 450 elements): 20288.09 requests per second
 LRANGE_600 (first 600 elements): 15153.81 requests per second
 MSET (10 keys): 88417.33 requests per second
+~~~
 
-Seems networking on client side is the bottleneck
+# Seems networking on client side is the bottleneck
 
-Try M4.4X to C4.2X
+# Try M4.4X to C4.2X
 
+~~~
 src/redis-benchmark -q -n 100000 -h 172.31.40.47
 PING_INLINE: 70721.36 requests per second
 PING_BULK: 100401.61 requests per second
@@ -272,14 +275,16 @@ LRANGE_300 (first 300 elements): 23446.66 requests per second
 LRANGE_500 (first 450 elements): 16276.04 requests per second
 LRANGE_600 (first 600 elements): 13354.70 requests per second
 MSET (10 keys): 78369.91 requests per second
+~~~
+
+# Elasticache
+
+# No replica, Same AZ
+
+# C4.2x -> Elasticache M4.4X
 
 
-Elasticache
-
-No replica, Same AZ
-
-C4.2x -> Elasticache M4.4X
-
+~~~
 ./redis-benchmark -q -n 100000 -h redism4.viiiod.0001.apne1.cache.amazonaws.com
 PING_INLINE: 84530.86 requests per second
 PING_BULK: 98039.22 requests per second
@@ -299,9 +304,11 @@ LRANGE_300 (first 300 elements): 24709.66 requests per second
 LRANGE_500 (first 450 elements): 18467.22 requests per second
 LRANGE_600 (first 600 elements): 15439.25 requests per second
 MSET (10 keys): 94607.38 requests per second
+~~~
 
-C4.2x -> Elasticache R4.2x
+# C4.2x -> Elasticache R4.2x
 
+~~~
 ./redis-benchmark -q -n 100000 -h  redis.viiiod.0001.apne1.cache.amazonaws.com
 PING_INLINE: 84033.61 requests per second
 PING_BULK: 86655.11 requests per second
@@ -321,11 +328,11 @@ LRANGE_300 (first 300 elements): 25329.28 requests per second
 LRANGE_500 (first 450 elements): 19798.06 requests per second
 LRANGE_600 (first 600 elements): 14695.08 requests per second
 MSET (10 keys): 86281.27 requests per second
+~~~
 
+# C4.2x -> Elasticache R4.4x
 
-C4.2x -> Elasticache R4.4x
-
-
+~~~
 ./redis-benchmark -q -n 100000 -h  redis4x.viiiod.0001.apne1.cache.amazonaws.com
 PING_INLINE: 96618.36 requests per second
 PING_BULK: 100502.52 requests per second
@@ -345,10 +352,129 @@ LRANGE_300 (first 300 elements): 26021.34 requests per second
 LRANGE_500 (first 450 elements): 19809.83 requests per second
 LRANGE_600 (first 600 elements): 14932.06 requests per second
 MSET (10 keys): 92936.80 requests per second
+~~~
 
 
+# Testing using different AZ
 
-Testing using different AZ
+# C4.2x(AZ D) -> Elasticache M4.4X
+
+~~~
+./redis-benchmark -q -n 100000 -h redism4.viiiod.0001.apne1.cache.amazonaws.com
+PING_INLINE: 20580.37 requests per second
+PING_BULK: 20429.01 requests per second
+SET: 20571.90 requests per second
+GET: 20588.84 requests per second
+INCR: 20542.32 requests per second
+LPUSH: 20610.06 requests per second
+RPUSH: 20618.56 requests per second
+LPOP: 20597.32 requests per second
+RPOP: 20554.99 requests per second
+SADD: 20622.81 requests per second
+HSET: 20416.50 requests per second
+SPOP: 20631.32 requests per second
+LPUSH (needed to benchmark LRANGE): 20525.45 requests per second
+LRANGE_100 (first 100 elements): 20165.36 requests per second
+LRANGE_300 (first 300 elements): 18175.21 requests per second
+LRANGE_500 (first 450 elements): 16531.66 requests per second
+LRANGE_600 (first 600 elements): 13412.02 requests per second
+MSET (10 keys): 20512.82 requests per second
+~~~
+
+# C4.2x (AZ D) -> Elasticache R4.4X
+
+~~~
+ ./redis-benchmark -q -n 100000 -h  redis4x.viiiod.0001.apne1.cache.amazonaws.com
+PING_INLINE: 20929.26 requests per second
+PING_BULK: 20639.84 requests per second
+SET: 20894.28 requests per second
+GET: 20942.41 requests per second
+INCR: 20920.50 requests per second
+LPUSH: 20824.66 requests per second
+RPUSH: 20898.64 requests per second
+LPOP: 20898.64 requests per second
+RPOP: 20872.47 requests per second
+SADD: 20733.98 requests per second
+HSET: 20881.19 requests per second
+SPOP: 20929.26 requests per second
+LPUSH (needed to benchmark LRANGE): 20903.01 requests per second
+LRANGE_100 (first 100 elements): 20491.80 requests per second
+LRANGE_300 (first 300 elements): 18903.59 requests per second
+LRANGE_500 (first 450 elements): 16818.03 requests per second
+LRANGE_600 (first 600 elements): 13708.02 requests per second
+MSET (10 keys): 20842.02 requests per second
+~~~
+
+# C4.2x (AZ D) -> EC2 M4.4X (AZ A)
+
+~~~
+./redis-benchmark -q -n 100000 -h 172.31.43.161
+PING_INLINE: 20764.12 requests per second
+PING_BULK: 20802.99 requests per second
+SET: 20811.65 requests per second
+GET: 20842.02 requests per second
+INCR: 20785.70 requests per second
+LPUSH: 20820.32 requests per second
+RPUSH: 20742.58 requests per second
+LPOP: 20354.16 requests per second
+RPOP: 20790.02 requests per second
+SADD: 20798.67 requests per second
+HSET: 20064.21 requests per second
+SPOP: 20828.99 requests per second
+LPUSH (needed to benchmark LRANGE): 20729.69 requests per second
+LRANGE_100 (first 100 elements): 20379.05 requests per second
+LRANGE_300 (first 300 elements): 18528.81 requests per second
+LRANGE_500 (first 450 elements): 17229.50 requests per second
+LRANGE_600 (first 600 elements): 14176.35 requests per second
+MSET (10 keys): 20725.39 requests per second
+~~~
+
+
+# C4.2x (AZ D) -> EC2 C4.2X (AZ A)
+
+~~~
+./redis-benchmark -q -n 100000 -h 172.31.40.47
+PING_INLINE: -nan
+PING_INLINE: 20794.34 requests per second
+PING_BULK: 20828.99 requests per second
+SET: 20798.67 requests per second
+GET: 20665.43 requests per second
+INCR: 20064.21 requests per second
+LPUSH: 20703.93 requests per second
+RPUSH: 20781.38 requests per second
+LPOP: 20759.81 requests per second
+RPOP: 20794.34 requests per second
+SADD: 20777.06 requests per second
+HSET: 20708.22 requests per second
+SPOP: 20781.38 requests per second
+LPUSH (needed to benchmark LRANGE): 20738.28 requests per second
+LRANGE_100 (first 100 elements): 20404.00 requests per second
+LRANGE_300 (first 300 elements): 18611.58 requests per second
+LRANGE_500 (first 450 elements): 17385.26 requests per second
+LRANGE_600 (first 600 elements): 14263.30 requests per second
+MSET (10 keys): 20777.06 requests per second
+~~~
+
+#Conclusion:
+
+#Cross AZ has big performance impact. 
+
+#Factors impacting Redis performance
+
+~~~
+There are multiple factors having direct consequences on Redis performance. We mention them here, since they can alter the result of any benchmarks. Please note however, that a typical Redis instance running on a low end, untuned box usually provides good enough performance for most applications.
+
+    Network bandwidth and latency usually have a direct impact on the performance. It is a good practice to use the ping program to quickly check the latency between the client and server hosts is normal before launching the benchmark. Regarding the bandwidth, it is generally useful to estimate the throughput in Gbit/s and compare it to the theoretical bandwidth of the network. For instance a benchmark setting 4 KB strings in Redis at 100000 q/s, would actually consume 3.2 Gbit/s of bandwidth and probably fit within a 10 Gbit/s link, but not a 1 Gbit/s one. In many real world scenarios, Redis throughput is limited by the network well before being limited by the CPU. To consolidate several high-throughput Redis instances on a single server, it worth considering putting a 10 Gbit/s NIC or multiple 1 Gbit/s NICs with TCP/IP bonding.
+    CPU is another very important factor. Being single-threaded, Redis favors fast CPUs with large caches and not many cores. At this game, Intel CPUs are currently the winners. It is not uncommon to get only half the performance on an AMD Opteron CPU compared to similar Nehalem EP/Westmere EP/Sandy Bridge Intel CPUs with Redis. When client and server run on the same box, the CPU is the limiting factor with redis-benchmark.
+    Speed of RAM and memory bandwidth seem less critical for global performance especially for small objects. For large objects (>10 KB), it may become noticeable though. Usually, it is not really cost-effective to buy expensive fast memory modules to optimize Redis.
+    Redis runs slower on a VM compared to running without virtualization using the same hardware. If you have the chance to run Redis on a physical machine this is preferred. However this does not mean that Redis is slow in virtualized environments, the delivered performances are still very good and most of the serious performance issues you may incur in virtualized environments are due to over-provisioning, non-local disks with high latency, or old hypervisor software that have slow fork syscall implementation.
+    When the server and client benchmark programs run on the same box, both the TCP/IP loopback and unix domain sockets can be used. Depending on the platform, unix domain sockets can achieve around 50% more throughput than the TCP/IP loopback (on Linux for instance). The default behavior of redis-benchmark is to use the TCP/IP loopback.
+    The performance benefit of unix domain sockets compared to TCP/IP loopback tends to decrease when pipelining is heavily used (i.e. long pipelines).
+    When an ethernet network is used to access Redis, aggregating commands using pipelining is especially efficient when the size of the data is kept under the ethernet packet size (about 1500 bytes). Actually, processing 10 bytes, 100 bytes, or 1000 bytes queries almost result in the same throughput. See the graph below.
+~~~
+
+# Refer to https://redis.io/topics/benchmarks
+
 
 
 
