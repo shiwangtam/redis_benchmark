@@ -1,16 +1,17 @@
 ## redis_benchmark
 
-# yum install -y wget gcc
-# wget http://download.redis.io/releases/redis-4.0.11.tar.gz
-# tar xvf redis-4.0.11.tar.gz 
-# cd redis-4.0.11
-# make
-# src/redis-server &
-# cd src
+#### yum install -y wget gcc
+#### wget http://download.redis.io/releases/redis-4.0.11.tar.gz
+#### tar xvf redis-4.0.11.tar.gz 
+#### cd redis-4.0.11
+#### make
+#### src/redis-server &
+#### cd src
 
-## localhost testing
+### localhost testing
 
-# C4.2xlarge
+#### C4.2xlarge localhost testing
+
 ~~~
 src/redis-benchmark  -q -n 100000
 PING_INLINE: 102354.15 requests per second
@@ -33,7 +34,7 @@ LRANGE_600 (first 600 elements): 15151.52 requests per second
 MSET (10 keys): 104712.05 requests per second
 ~~~
 
-# M4.4xlarge
+#### M4.4xlarge localhost testing
 ~~~
 src/redis-benchmark -q -n 100000
 PING_INLINE: 90334.23 requests per second
@@ -56,10 +57,10 @@ LRANGE_600 (first 600 elements): 12610.34 requests per second
 MSET (10 keys): 91827.37 requests per second
 ~~~
 
-##How to Set remote lister
+### How to Set remote lister
 
+#### cat /etc/myredis.conf
 
-# cat /etc/myredis.conf
 ~~~
 # [Redis](http://yijiebuyi.com/category/redis.html) 配置文件
 
@@ -199,11 +200,11 @@ slave-serve-stale-data yes
 # repl-timeout 60   
 ~~~
 
-# mkdir /var/log/redis
-# touch /var/log/redis/redis.log
-# ./redis-server /etc/myredis.conf
+#### mkdir /var/log/redis
+#### touch /var/log/redis/redis.log
+#### ./redis-server /etc/myredis.conf
 
-# Client: C4.2X -> C4.2X same AZ
+#### Client: C4.2X -> C4.2X same AZ
 
 ~~~
 ./redis-benchmark -q -n 100000 -h 172.31.40.47
@@ -227,7 +228,7 @@ LRANGE_600 (first 600 elements): 16310.55 requests per second
 MSET (10 keys): 95693.78 requests per second
 ~~~
 
-# Client: C4.2x -> M4.4X
+#### Client: C4.2x -> M4.4X same AZ
 
 ~~~
 ./redis-benchmark -q -n 100000 -h 172.31.43.161
@@ -251,9 +252,9 @@ LRANGE_600 (first 600 elements): 15153.81 requests per second
 MSET (10 keys): 88417.33 requests per second
 ~~~
 
-# Seems networking on client side is the bottleneck
+#### Seems networking on client side is the bottleneck
 
-# Try M4.4X to C4.2X
+#### Try M4.4X to C4.2X same AZ
 
 ~~~
 src/redis-benchmark -q -n 100000 -h 172.31.40.47
@@ -277,11 +278,9 @@ LRANGE_600 (first 600 elements): 13354.70 requests per second
 MSET (10 keys): 78369.91 requests per second
 ~~~
 
-# Elasticache
+### Elasticache No replica, Same AZ
 
-# No replica, Same AZ
-
-# C4.2x -> Elasticache M4.4X
+#### C4.2x -> Elasticache M4.4X same AZ
 
 
 ~~~
@@ -306,7 +305,7 @@ LRANGE_600 (first 600 elements): 15439.25 requests per second
 MSET (10 keys): 94607.38 requests per second
 ~~~
 
-# C4.2x -> Elasticache R4.2x
+#### C4.2x -> Elasticache R4.2x same AZ
 
 ~~~
 ./redis-benchmark -q -n 100000 -h  redis.viiiod.0001.apne1.cache.amazonaws.com
@@ -330,7 +329,7 @@ LRANGE_600 (first 600 elements): 14695.08 requests per second
 MSET (10 keys): 86281.27 requests per second
 ~~~
 
-# C4.2x -> Elasticache R4.4x
+#### C4.2x -> Elasticache R4.4x same AZ
 
 ~~~
 ./redis-benchmark -q -n 100000 -h  redis4x.viiiod.0001.apne1.cache.amazonaws.com
@@ -355,9 +354,9 @@ MSET (10 keys): 92936.80 requests per second
 ~~~
 
 
-# Testing using different AZ
+### Testing using different AZ
 
-# C4.2x(AZ D) -> Elasticache M4.4X
+#### C4.2x (AZ d) -> Elasticache M4.4X (AZ a)
 
 ~~~
 ./redis-benchmark -q -n 100000 -h redism4.viiiod.0001.apne1.cache.amazonaws.com
@@ -381,7 +380,7 @@ LRANGE_600 (first 600 elements): 13412.02 requests per second
 MSET (10 keys): 20512.82 requests per second
 ~~~
 
-# C4.2x (AZ D) -> Elasticache R4.4X
+#### C4.2x (AZ d) -> Elasticache R4.4X (AZ a)
 
 ~~~
  ./redis-benchmark -q -n 100000 -h  redis4x.viiiod.0001.apne1.cache.amazonaws.com
@@ -405,7 +404,7 @@ LRANGE_600 (first 600 elements): 13708.02 requests per second
 MSET (10 keys): 20842.02 requests per second
 ~~~
 
-# C4.2x (AZ D) -> EC2 M4.4X (AZ A)
+#### C4.2x (AZ d) -> EC2 M4.4X (AZ a)
 
 ~~~
 ./redis-benchmark -q -n 100000 -h 172.31.43.161
@@ -430,7 +429,7 @@ MSET (10 keys): 20725.39 requests per second
 ~~~
 
 
-# C4.2x (AZ D) -> EC2 C4.2X (AZ A)
+#### C4.2x (AZ D) -> EC2 C4.2X (AZ A)
 
 ~~~
 ./redis-benchmark -q -n 100000 -h 172.31.40.47
@@ -455,25 +454,16 @@ LRANGE_600 (first 600 elements): 14263.30 requests per second
 MSET (10 keys): 20777.06 requests per second
 ~~~
 
-#Conclusion:
-
-#Cross AZ has big performance impact. 
-
-#Factors impacting Redis performance
+## Conclusion:
+~~~
+1. Cross AZ has big performance impact. I need to dig further.
+2. Elasticache is as well as EC2+redis.
 
 ~~~
-There are multiple factors having direct consequences on Redis performance. We mention them here, since they can alter the result of any benchmarks. Please note however, that a typical Redis instance running on a low end, untuned box usually provides good enough performance for most applications.
 
-    Network bandwidth and latency usually have a direct impact on the performance. It is a good practice to use the ping program to quickly check the latency between the client and server hosts is normal before launching the benchmark. Regarding the bandwidth, it is generally useful to estimate the throughput in Gbit/s and compare it to the theoretical bandwidth of the network. For instance a benchmark setting 4 KB strings in Redis at 100000 q/s, would actually consume 3.2 Gbit/s of bandwidth and probably fit within a 10 Gbit/s link, but not a 1 Gbit/s one. In many real world scenarios, Redis throughput is limited by the network well before being limited by the CPU. To consolidate several high-throughput Redis instances on a single server, it worth considering putting a 10 Gbit/s NIC or multiple 1 Gbit/s NICs with TCP/IP bonding.
-    CPU is another very important factor. Being single-threaded, Redis favors fast CPUs with large caches and not many cores. At this game, Intel CPUs are currently the winners. It is not uncommon to get only half the performance on an AMD Opteron CPU compared to similar Nehalem EP/Westmere EP/Sandy Bridge Intel CPUs with Redis. When client and server run on the same box, the CPU is the limiting factor with redis-benchmark.
-    Speed of RAM and memory bandwidth seem less critical for global performance especially for small objects. For large objects (>10 KB), it may become noticeable though. Usually, it is not really cost-effective to buy expensive fast memory modules to optimize Redis.
-    Redis runs slower on a VM compared to running without virtualization using the same hardware. If you have the chance to run Redis on a physical machine this is preferred. However this does not mean that Redis is slow in virtualized environments, the delivered performances are still very good and most of the serious performance issues you may incur in virtualized environments are due to over-provisioning, non-local disks with high latency, or old hypervisor software that have slow fork syscall implementation.
-    When the server and client benchmark programs run on the same box, both the TCP/IP loopback and unix domain sockets can be used. Depending on the platform, unix domain sockets can achieve around 50% more throughput than the TCP/IP loopback (on Linux for instance). The default behavior of redis-benchmark is to use the TCP/IP loopback.
-    The performance benefit of unix domain sockets compared to TCP/IP loopback tends to decrease when pipelining is heavily used (i.e. long pipelines).
-    When an ethernet network is used to access Redis, aggregating commands using pipelining is especially efficient when the size of the data is kept under the ethernet packet size (about 1500 bytes). Actually, processing 10 bytes, 100 bytes, or 1000 bytes queries almost result in the same throughput. See the graph below.
-~~~
+#### Factors impacting Redis performance
 
-# Refer to https://redis.io/topics/benchmarks
+#### Refer to https://redis.io/topics/benchmarks
 
 
 
