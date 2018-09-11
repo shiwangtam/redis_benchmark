@@ -57,7 +57,7 @@ LRANGE_600 (first 600 elements): 12610.34 requests per second
 MSET (10 keys): 91827.37 requests per second
 ~~~
 
-### How to Set remote lister
+### How to set remote listener 
 
 #### cat /etc/myredis.conf
 
